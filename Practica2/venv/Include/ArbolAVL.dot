@@ -1,0 +1,18 @@
+digraph ArbolAVL{
+ rankdir=TB;
+ graph [splines=compound, nodesep=0.5];
+node [shape = record, style=filled, fillcolor=seashell2,width=0.7,height=0.2];
+201005874[label="<C0>|Carne: 201005874&#92;n Nombre: Estudiante1&#92;n Altura: 0|<C1>"];
+201212963[label="<C0>|Carne: 201212963&#92;n Nombre: Andres&#92;n Altura: 1|<C1>"];
+201212963->201313526
+201212963->201005874
+201313526[label="<C0>|Carne: 201313526&#92;n Nombre: Alan&#92;n Altura: 0|<C1>"];
+201403525[label="<C0>|Carne: 201403525&#92;n Nombre: Nery&#92;n Altura: 2|<C1>"];
+201403525->201403819
+201403525->201212963
+201403624[label="<C0>|Carne: 201403624&#92;n Nombre: Fernando&#92;n Altura: 0|<C1>"];
+201403819[label="<C0>|Carne: 201403819&#92;n Nombre: Anne&#92;n Altura: 1|<C1>"];
+201403819->201602255
+201403819->201403624
+201602255[label="<C0>|Carne: 201602255&#92;n Nombre: Estudiante2&#92;n Altura: 0|<C1>"];
+}

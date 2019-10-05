@@ -15,7 +15,7 @@ class ArbolAVL:
         self.raiz=None
 
     def ObtenerFe(self,nodo):
-        if n == None:
+        if nodo == None:
             return -1
         return nodo.altura
 
@@ -25,20 +25,20 @@ class ArbolAVL:
         else:
             return b
 
-    def rotarizquierda(self):
+    def rotarizquierda(self,nodo):
         avlnodo=nodo.izquierdo
         nodo.izquierdo=avlnodo.derecho
         avlnodo.derecho=nodo
-        nodo.altura=max(ObtenerFe(nodo.izquierdo),ObtenerFe(n.derecho)+1)
-        avlnodo.altura=max(ObtenerFe(nodo.izquierdo),ObtenerFe(n.derecho)+1)
+        nodo.altura = self.max(self.ObtenerFe(nodo.izquierdo), self.ObtenerFe(nodo.derecho) + 1)
+        avlnodo.altura = self.max(self.ObtenerFe(avlnodo.izquierdo), self.ObtenerFe(avlnodo.derecho) + 1)
         return avlnodo
 
     def rotarderecha(self,nodo):
-        avl=nodo.derecho
+        avlnodo=nodo.derecho
         nodo.derecho=avlnodo.izquierdo
         avlnodo.izquierdo=nodo
-        nodo.altura=max(ObtenerFe(nodo.izquierdo),ObtenerFe(n.derecho)+1)
-        avlnodo.altura=max(ObtenerFe(nodo.izquierdo),ObtenerFe(n.derecho)+1)
+        nodo.altura = self.max(self.ObtenerFe(nodo.izquierdo), self.ObtenerFe(nodo.derecho) + 1)
+        avlnodo.altura = self.max(self.ObtenerFe(avlnodo.izquierdo), self.ObtenerFe(avlnodo.derecho) + 1)
         return avlnodo
 
     def rotarDobleIzq(self,nodo):
@@ -49,39 +49,39 @@ class ArbolAVL:
 
     def rotarDobleDer(self,nodo):
         avl=None
-        nodo.derecho=rotarizquierda(nodo.derecho)
-        avl=rotarderecha(nodo)
+        nodo.derecho=self.rotarizquierda(nodo.derecho)
+        avl=self.rotarderecha(nodo)
         return avl
 
     def insertar(self,nuevo,subA):
         nuevopadre=subA
-        if nuevo < subA:
+        if nuevo.carne < subA.carne:
             if subA.izquierdo == None:
                 subA.izquierdo = nuevo
             else:
-                subA.izquierdo=insertar(nuevo,subA.izquierdo)
-                if (ObtenerFe(subA.izquierdo) - ObtenerFe(subA.derecho)) == 2:
-                    if nuevo < subA.izquierdo.carnet:
-                        nuevopadre=rotarizquierda(subA)
+                subA.izquierdo=self.insertar(nuevo,subA.izquierdo)
+                if (self.ObtenerFe(subA.izquierdo) - self.ObtenerFe(subA.derecho)) == 2:
+                    if nuevo.carne < subA.izquierdo.carne:
+                        nuevopadre=self.rotarizquierda(subA)
                     else:
-                        nuevopadre=rotarDobleIzq(subA)
-        elif nuevo > subA:
-            if subA.derecho==None:
-                subA.derecho=nuevo
+                        nuevopadre=self.rotarDobleIzq(subA)
+        elif nuevo.carne > subA.carne:
+            if subA.derecho == None:
+                subA.derecho = nuevo
             else:
-                subA.derecho=insertar(nuevo,subA.derecho)
-                if (ObtenerFe(subA.derecho) - ObtenerFe(subA.izquierdo)) == 2:
-                    if nuevo > subA.derecho.carnet:
-                        nuevopadre=rotarderecha(subA)
+                subA.derecho=self.insertar(nuevo,subA.derecho)
+                if (self.ObtenerFe(subA.derecho) - self.ObtenerFe(subA.izquierdo)) == 2:
+                    if nuevo.carne > subA.derecho.carne:
+                        nuevopadre=self.rotarderecha(subA)
                     else:
-                        nuevopadre=rotarDobleDer(subA)
+                        nuevopadre=self.rotarDobleDer(subA)
 
         if subA.izquierdo == None and subA.derecho != None:
             subA.altura=subA.derecho.altura+1
         elif subA.derecho == None and subA.izquierdo != None:
             subA.altura=subA.izquierdo.altura+1
         else:
-            subA.altura=max(ObtenerFe(subA.izquierdo),ObtenerFe(subA.derecho))+1
+            subA.altura=self.max(self.ObtenerFe(subA.izquierdo),self.ObtenerFe(subA.derecho))+1
 
         return  nuevopadre
 
@@ -91,22 +91,48 @@ class ArbolAVL:
         if self.raiz == None:
             self.raiz=nuevo
         else:
-            self.raiz=insertar(nuevo,self.raiz)
+            self.raiz=self.insertar(nuevo,self.raiz)
+
+    def GraficarAVL(self):
+        file = open("ArbolAVL.dot", "w")
+        file.write("digraph ArbolAVL{\n rankdir=TB;\n")
+        file.write(" graph [splines=compound, nodesep=0.5];\n")
+        file.write("node [shape = record, style=filled, fillcolor=seashell2,width=0.7,height=0.2];\n")
+        self.CodigoInterno(self.raiz,file)
+        file.write("}\n")
+        file.close()
+        os.system("dot -Tpng ArbolAVL.dot -o ArbolAVL.png")
+        os.system("ArbolAVL.png")
+
+    def CodigoInterno(self, raiz,file):
+        if raiz != None:
+            self.CodigoInterno(raiz.izquierdo,file)
+            file.write(str(raiz.carne)+"[label=\"<C0>|Carne: "+str(raiz.carne)+"&#92;n Nombre: "+raiz.nombre + "&#92;n Altura: "+ str(raiz.altura)+"|<C1>\"];\n")
+            if raiz.derecho != None:
+                file.write(str(raiz.carne) + "->" + str(raiz.derecho.carne)+"\n")
+            if raiz.izquierdo != None:
+                file.write(str(raiz.carne) + "->" + str(raiz.izquierdo.carne) + "\n")
+
+            self.CodigoInterno(raiz.derecho,file)
 
 
-    def inorden(self,nodo):
+    def InOrden(self,nodo):
         if nodo != None:
-            inorden(nodo.izquierdo)
+            self.InOrden(nodo.izquierdo)
             print(nodo.carne)
-            inorden(nodo.derecho)
-
-
-
+            self.InOrden(nodo.derecho)
 
 if __name__=="__main__":
     arbol=ArbolAVL()
-    arbol.insertar("1","3")
-    arbol.inorden(arbol.raiz)
+    arbol.insertartodo(201403525,"Nery")
+    arbol.insertartodo(201212963, "Andres")
+    arbol.insertartodo(201005874, "Estudiante1")
+    arbol.insertartodo(201313526, "Alan")
+    arbol.insertartodo(201403819, "Anne")
+    arbol.insertartodo(201403624, "Fernando")
+    arbol.insertartodo(201602255, "Estudiante2")
+    arbol.InOrden(arbol.raiz)
+    arbol.GraficarAVL()
 
 
 

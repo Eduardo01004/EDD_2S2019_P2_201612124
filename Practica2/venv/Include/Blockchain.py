@@ -38,13 +38,16 @@ class BlockChain:
                 if auxiliar != self.ultimo:
                     c = str(hash(auxiliar))
                     ca = str(hash(aux2))
-                    file.write( c + "[shape=record, style=filled, fillcolor=seashell2,label=\"" + "Class= " + auxiliar.Class + "TimeStamp= " + str( auxiliar.timestamp) + "PHASH= " + str(auxiliar.prevhash) + "HASH= " + str(auxiliar.Hash) + "\"];\n")
+                    file.write( c + "[shape=record, style=filled, fillcolor=seashell2,label=\"" + "Class= " + auxiliar.Class + " &#92;n TimeStamp= " + str( auxiliar.timestamp) + "&#92;n PHASH= " + str(auxiliar.prevhash) + "&#92;n HASH= " + str(auxiliar.Hash) + "\"];\n")
                     file.write(c + "->" + ca + "\n")
                     file.write(ca + "->" + c + "\n")
 
                 elif auxiliar == self.primero or auxiliar == self.ultimo:
                     c = str(hash(auxiliar))
-                    file.write(c + "[shape=record, style=filled, fillcolor=seashell2,label=\""+"Class= " + auxiliar.Class +" TimeStamp= "+ str(auxiliar.timestamp) +" PHASH= "+str(auxiliar.prevhash)+" HASH= "+str(auxiliar.Hash)+ "\"];\n")
+                    file.write(
+                        c + "[shape=record, style=filled, fillcolor=seashell2,label=\"" + "Class= " + auxiliar.Class + " &#92;n TimeStamp= " + str(
+                            auxiliar.timestamp) + "&#92;n PHASH= " + str(auxiliar.prevhash) + "&#92;n HASH= " + str(
+                            auxiliar.Hash) + "\"];\n")
                 auxiliar = auxiliar.siguiente
         file.write("}\n")
         file.close()
