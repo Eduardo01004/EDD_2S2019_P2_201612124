@@ -49,6 +49,7 @@ def Seleccion(window):
 
 def LeerArchivo(window):
     archivo=carga(window)
+    pito=""
     try:
         with open(archivo) as file:
             reader = csv.reader(file)
@@ -56,9 +57,12 @@ def LeerArchivo(window):
             for row in reader:
                 if line_count == 0:
                     line_count += 1
-
                 else:
-                    print(row[2])
+                    for x in range (1,len(row)):
+                        pito=row[x]+","
+                        temp=len(pito)
+                        cadenajson=pito[:temp-1]
+                        print(cadenajson)
                     line_count +=  1
 
             while True:
