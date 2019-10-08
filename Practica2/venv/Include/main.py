@@ -1,6 +1,12 @@
 import curses
 from curses import KEY_RIGHT, KEY_LEFT, KEY_DOWN, KEY_UP
 import csv
+import time
+import datetime
+import hashlib
+
+index=0
+
 def Menu_Principal(window):
 
     Titulo(window,'Main Menu')
@@ -48,8 +54,20 @@ def Seleccion(window):
             keystroke=-1
 
 def LeerArchivo(window):
+    global index
+    index=index+1
     archivo=carga(window)
     pito=""
+    x=datetime.datetime.now()
+    y=datetime.datetime.now()
+    fecha=str(x.day)+"-"+str(x.month)+"-"+str(x.year)+"-"+"::"
+    hora=str(y.hour)+":"+str(y.minute)+":"+str(y.second)
+    timestamp=fecha+hora
+    #print(timestamp)
+    m = hashlib.sha256()
+    m.update(b"Nobody inspects")
+    #print(m.hexdigest())
+
     try:
         with open(archivo) as file:
             reader = csv.reader(file)
@@ -62,7 +80,7 @@ def LeerArchivo(window):
                         pito=row[x]+","
                         temp=len(pito)
                         cadenajson=pito[:temp-1]
-                        print(cadenajson)
+                        #print(cadenajson)
                     line_count +=  1
 
             while True:

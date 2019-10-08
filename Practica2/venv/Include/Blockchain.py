@@ -1,12 +1,15 @@
 import os
+import hashlib
+import json
 
 class NodoBlock:
-    def __init__(self,indice,timestamp,Class,prevHash,Hash):
-        self.indice=0
-        self.timestamp=timestamp
-        self.Class=Class
-        self.prevhash=prevHash
-        self.Hash=Hash
+    def __init__(self,INDEX,TIMESTAMP,CLASS,DATA,PREVIOUSHASH,HASH):
+        self.INDEX=INDEX
+        self.TIMESTAMP=TIMESTAMP
+        self.CLASS=CLASS
+        self.DATA=DATA
+        self.PREVIOUSHASH=PREVIOUSHASH
+        self.HASH=HASH
         self.siguiente=None
         self.atras=None
 
@@ -15,8 +18,8 @@ class BlockChain:
         self.primero=None
         self.ultimo=None
 
-    def Insertar(self, indice,timestamp,Class,prevHash,Hash):
-        nuevo = NodoBlock(indice,timestamp,Class,prevHash,Hash)
+    def Insertar(self,INDEX,TIMESTAMP,CLASS,DATA,PREVIOUSHASH,HASH):
+        nuevo = NodoBlock(INDEX,TIMESTAMP,CLASS,DATA,PREVIOUSHASH,HASH)
         if self.primero == None:
             self.primero = nuevo
             self.primero.siguiente = None
@@ -38,16 +41,12 @@ class BlockChain:
                 if auxiliar != self.ultimo:
                     c = str(hash(auxiliar))
                     ca = str(hash(aux2))
-                    file.write( c + "[shape=record, style=filled, fillcolor=seashell2,label=\"" + "Class= " + auxiliar.Class + " &#92;n TimeStamp= " + str( auxiliar.timestamp) + "&#92;n PHASH= " + str(auxiliar.prevhash) + "&#92;n HASH= " + str(auxiliar.Hash) + "\"];\n")
+                    file.write( c + "[shape=record, style=filled, fillcolor=seashell2,label=\""+"INDEX: "+str(auxiliar.INDEX) + "&#92;n Class= " + auxiliar.CLASS + " &#92;n TimeStamp= " + auxiliar.TIMESTAMP + "&#92;n PHASH= " + auxiliar.PREVIOUSHASH + "&#92;n HASH= " + auxiliar.HASH + "\"];\n")
                     file.write(c + "->" + ca + "\n")
                     file.write(ca + "->" + c + "\n")
-
                 elif auxiliar == self.primero or auxiliar == self.ultimo:
                     c = str(hash(auxiliar))
-                    file.write(
-                        c + "[shape=record, style=filled, fillcolor=seashell2,label=\"" + "Class= " + auxiliar.Class + " &#92;n TimeStamp= " + str(
-                            auxiliar.timestamp) + "&#92;n PHASH= " + str(auxiliar.prevhash) + "&#92;n HASH= " + str(
-                            auxiliar.Hash) + "\"];\n")
+                    file.write( c + "[shape=record, style=filled, fillcolor=seashell2,label=\"" +"INDEX: "+str(auxiliar.INDEX)+ " &#92;n Class= " + auxiliar.CLASS + " &#92;n TimeStamp= " + auxiliar.TIMESTAMP + "&#92;n PHASH= " + auxiliar.PREVIOUSHASH + "&#92;n HASH= " + auxiliar.HASH + "\"];\n")
                 auxiliar = auxiliar.siguiente
         file.write("}\n")
         file.close()
@@ -57,5 +56,21 @@ class BlockChain:
 
 if __name__=="__main__":
     bloque=BlockChain()
-    bloque.Insertar(0,"15-15-15","EDD",0000,000)
-    bloque.GraficarDobleSnake()
+    bloque.Insertar(0,"15-15-15","EDD","popo","skldksal","ksapqoq")
+    bloque.Insertar(1,"14-14-14","COMPI","popo","skldksal","ksapqoq")
+    bloque.Insertar(2,"12-12-12","ORGA","popo","skldksal","ksapqoq")
+    bloque.Insertar(3,"11-11-11","IO","popo","skldksal","ksapqoq")
+    #index+time+class+data+prevhasg
+    m = hashlib.sha256()
+    q="028-09-2019-::10-50-25Estructuras"
+    a="0000"
+    p="""{"value":"201403525-Nery", "left":{"value":"201212963-Andres", "left":{"value":"201005874-Estudiante1", "left":null, "right":null}, "right":{"value":"201313526-Alan", "left":null, "right":null}}, "right":{"value":"201403819-Anne", "left":{"value":"201403624-Fernando", "left":null, "right":null}, "right":{"value":"201602255-Estudiante2", "left":null, "right":null}}}"""
+    #my_str_as_bytes = str.encode(q+p+a)
+    #m.update(my_str_as_bytes)
+    #print(m.hexdigest())
+    #bloque.Insertar(4,"11-11-11","IO",str(m.hexdigest()),str(m.hexdigest()),"ksapqoq")
+    #bloque.GraficarDobleSnake()
+
+    data=json.loads(p)
+    for name in data:
+        print(name)

@@ -7,9 +7,6 @@ class NodoAVL:
         self.altura=0
         self.izquierdo=None
         self.derecho=None
-
-
-
 class ArbolAVL:
     def __init__(self):
         self.raiz=None
@@ -133,17 +130,3 @@ if __name__=="__main__":
     arbol.insertartodo(201602255, "Estudiante2")
     arbol.InOrden(arbol.raiz)
     arbol.GraficarAVL()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
