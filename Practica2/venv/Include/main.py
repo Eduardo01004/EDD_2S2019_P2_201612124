@@ -60,7 +60,7 @@ def LeerArchivo(window):
     pito=""
     x=datetime.datetime.now()
     y=datetime.datetime.now()
-    fecha=str(x.day)+"-"+str(x.month)+"-"+str(x.year)+"-"+"::"
+    fecha=str(x.day)+"-"+str(x.month)+"-"+str(x.year)+"::"
     hora=str(y.hour)+":"+str(y.minute)+":"+str(y.second)
     timestamp=fecha+hora
     #print(timestamp)

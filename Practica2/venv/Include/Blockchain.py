@@ -1,6 +1,7 @@
 import os
 import hashlib
 import json
+from ArbolAVL import NodoAVL,ArbolAVL
 
 class NodoBlock:
     def __init__(self,INDEX,TIMESTAMP,CLASS,DATA,PREVIOUSHASH,HASH):
@@ -10,6 +11,7 @@ class NodoBlock:
         self.DATA=DATA
         self.PREVIOUSHASH=PREVIOUSHASH
         self.HASH=HASH
+        self.arbol=ArbolAVL()
         self.siguiente=None
         self.atras=None
 
@@ -31,7 +33,7 @@ class BlockChain:
             nuevo.atras = self.ultimo
             self.ultimo = nuevo
 
-    def GraficarDobleSnake(self):
+    def GraficarBloque(self):
         file = open("ListaBloques.dot", "w")
         file.write("digraph G { \n")
         auxiliar = self.primero
@@ -60,17 +62,21 @@ if __name__=="__main__":
     bloque.Insertar(1,"14-14-14","COMPI","popo","skldksal","ksapqoq")
     bloque.Insertar(2,"12-12-12","ORGA","popo","skldksal","ksapqoq")
     bloque.Insertar(3,"11-11-11","IO","popo","skldksal","ksapqoq")
-    #index+time+class+data+prevhasg
     m = hashlib.sha256()
-    q="028-09-2019-::10-50-25Estructuras"
+    q="028-09-2019::10-50-25Estructuras"
     a="0000"
     p="""{"value":"201403525-Nery", "left":{"value":"201212963-Andres", "left":{"value":"201005874-Estudiante1", "left":null, "right":null}, "right":{"value":"201313526-Alan", "left":null, "right":null}}, "right":{"value":"201403819-Anne", "left":{"value":"201403624-Fernando", "left":null, "right":null}, "right":{"value":"201602255-Estudiante2", "left":null, "right":null}}}"""
     #my_str_as_bytes = str.encode(q+p+a)
     #m.update(my_str_as_bytes)
     #print(m.hexdigest())
     #bloque.Insertar(4,"11-11-11","IO",str(m.hexdigest()),str(m.hexdigest()),"ksapqoq")
-    #bloque.GraficarDobleSnake()
-
+    #bloque.GraficarBloque()
+    c=json.dumps(p,sort_keys=True, indent=4)
     data=json.loads(p)
-    for name in data:
-        print(name)
+    popo=""
+    pito=""
+    print(json.dumps(p,sort_keys=True, indent=4))
+
+        
+    #print(popo)
+        

@@ -1,0 +1,10 @@
+digraph inorden {
+rankdir = LR;
+524469[shape=record, style=filled, fillcolor=seashell2,label="Imagen:201612124"];
+524469->524475
+524475[shape=record, style=filled, fillcolor=seashell2,label="Imagen:201612125"];
+524475->524477
+524477[shape=record, style=filled, fillcolor=seashell2,label="Imagen:201612126"];
+524477->524479
+524479[shape=record, style=filled, fillcolor=seashell2,label="Imagen:201612127"];
+}

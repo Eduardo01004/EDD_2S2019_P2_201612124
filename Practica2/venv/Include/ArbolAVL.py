@@ -40,8 +40,8 @@ class ArbolAVL:
 
     def rotarDobleIzq(self,nodo):
         avl=None
-        nodo.izquierdo=rotarderecha(nodo.izquierdo)
-        avl=rotarizquierda(nodo)
+        nodo.izquierdo=self.rotarderecha(nodo.izquierdo)
+        avl=self.rotarizquierda(nodo)
         return  avl
 
     def rotarDobleDer(self,nodo):
@@ -118,6 +118,20 @@ class ArbolAVL:
             self.InOrden(nodo.izquierdo)
             print(nodo.carne)
             self.InOrden(nodo.derecho)
+
+    def PostOrden(self,raiz):
+        if raiz != None:
+            self.PostOrden(raiz.izquierdo)
+            self.PostOrden(raiz.derecho)
+            print(raiz.carne)
+    
+    def PreOrden(self,raiz):
+        if raiz != None:
+            print(raiz.carne)
+            self.PostOrden(raiz.izquierdo)
+            self.PostOrden(raiz.derecho)
+
+
 
 if __name__=="__main__":
     arbol=ArbolAVL()
