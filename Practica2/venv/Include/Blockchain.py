@@ -24,11 +24,9 @@ class BlockChain:
         nuevo = NodoBlock(INDEX,TIMESTAMP,CLASS,DATA,PREVIOUSHASH,HASH)
         if self.primero == None:
             self.primero = nuevo
-            self.primero.siguiente = None
-            self.primero.atras = None
-            self.ultimo = nuevo
+            self.ultimo = self.primero
         else:
-            self.ultimo.siguiente = nuevo
+            self.ultimo.siguiente=nuevo
             nuevo.siguiente = None
             nuevo.atras = self.ultimo
             self.ultimo = nuevo
@@ -56,27 +54,33 @@ class BlockChain:
         os.system(" ListaBloques.png")
 
 
+
+    def Read_Json(self,data):
+        for (k,datos) in data.items():
+            if isinstance(datos, dict):
+                self.Read_Json(datos)
+            else:
+                if datos != None:
+                    print(str(datos))
+                else:
+                    pass
+
 if __name__=="__main__":
     bloque=BlockChain()
-    bloque.Insertar(0,"15-15-15","EDD","popo","skldksal","ksapqoq")
-    bloque.Insertar(1,"14-14-14","COMPI","popo","skldksal","ksapqoq")
-    bloque.Insertar(2,"12-12-12","ORGA","popo","skldksal","ksapqoq")
-    bloque.Insertar(3,"11-11-11","IO","popo","skldksal","ksapqoq")
-    m = hashlib.sha256()
-    q="028-09-2019::10-50-25Estructuras"
-    a="0000"
-    p="""{"value":"201403525-Nery", "left":{"value":"201212963-Andres", "left":{"value":"201005874-Estudiante1", "left":null, "right":null}, "right":{"value":"201313526-Alan", "left":null, "right":null}}, "right":{"value":"201403819-Anne", "left":{"value":"201403624-Fernando", "left":null, "right":null}, "right":{"value":"201602255-Estudiante2", "left":null, "right":null}}}"""
-    #my_str_as_bytes = str.encode(q+p+a)
-    #m.update(my_str_as_bytes)
-    #print(m.hexdigest())
-    #bloque.Insertar(4,"11-11-11","IO",str(m.hexdigest()),str(m.hexdigest()),"ksapqoq")
-    #bloque.GraficarBloque()
-    c=json.dumps(p,sort_keys=True, indent=4)
-    data=json.loads(p)
-    popo=""
-    pito=""
-    print(json.dumps(p,sort_keys=True, indent=4))
 
+    bloque.Insertar(0,"15-15-15","EDD","popo","0000","k")
+
+    if bloque.primero != None:
+        p=bloque.primero
         
-    #print(popo)
+        bloque.Insertar(1,"14-14-14","COMPI","popo",bloque.ultimo.HASH,"b")
+
+        bloque.Insertar(2,"12-12-12","ORGA","popo",bloque.ultimo.HASH,"r")
+
+        bloque.Insertar(3,"11-11-11","IO","popo",bloque.ultimo.HASH,"x")
+    p="{\"value\":\"201403525-Nery\",\"left\":{\"value\":\"201212963-Andres\",\"left\":{\"value\":\"201005874-Estudiante1\",\"left\":null,\"right\":null},\"right\":{\"value\":\"201313526-Alan\",\"left\":null,\"right\":null}},\"right\":{\"value\":\"201403819-Anne\",\"left\":{\"value\":\"201403624-Fernando\",\"left\":null,\"right\":null},\"right\":{\"value\":\"201602255-Estudiante2\",\"left\":null,\"right\":null}}}"
+    bloque.GraficarBloque()
+    data=json.loads(p)
+    bloque.Read_Json(data)
+    #print(json.dumps(p,sort_keys=True, indent=4))
         

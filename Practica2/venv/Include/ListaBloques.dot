@@ -1,12 +1,12 @@
 digraph G { 
-1966303[shape=record, style=filled, fillcolor=seashell2,label="INDEX: 0&#92;n Class= EDD &#92;n TimeStamp= 15-15-15&#92;n PHASH= skldksal&#92;n HASH= ksapqoq"];
-1966303->1966309
-1966309->1966303
-1966309[shape=record, style=filled, fillcolor=seashell2,label="INDEX: 1&#92;n Class= COMPI &#92;n TimeStamp= 14-14-14&#92;n PHASH= skldksal&#92;n HASH= ksapqoq"];
-1966309->2000619
-2000619->1966309
-2000619[shape=record, style=filled, fillcolor=seashell2,label="INDEX: 2&#92;n Class= ORGA &#92;n TimeStamp= 12-12-12&#92;n PHASH= skldksal&#92;n HASH= ksapqoq"];
-2000619->2000623
-2000623->2000619
-2000623[shape=record, style=filled, fillcolor=seashell2,label="INDEX: 3 &#92;n Class= IO &#92;n TimeStamp= 11-11-11&#92;n PHASH= skldksal&#92;n HASH= ksapqoq"];
+3285461[shape=record, style=filled, fillcolor=seashell2,label="INDEX: 0&#92;n Class= EDD &#92;n TimeStamp= 15-15-15&#92;n PHASH= 0000&#92;n HASH= k"];
+3285461->3285467
+3285467->3285461
+3285467[shape=record, style=filled, fillcolor=seashell2,label="INDEX: 1&#92;n Class= COMPI &#92;n TimeStamp= 14-14-14&#92;n PHASH= k&#92;n HASH= b"];
+3285467->3389169
+3389169->3285467
+3389169[shape=record, style=filled, fillcolor=seashell2,label="INDEX: 2&#92;n Class= ORGA &#92;n TimeStamp= 12-12-12&#92;n PHASH= b&#92;n HASH= r"];
+3389169->3389173
+3389173->3389169
+3389173[shape=record, style=filled, fillcolor=seashell2,label="INDEX: 3 &#92;n Class= IO &#92;n TimeStamp= 11-11-11&#92;n PHASH= r&#92;n HASH= x"];
 }
