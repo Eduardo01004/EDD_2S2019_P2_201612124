@@ -5,19 +5,29 @@ import time
 import datetime
 import hashlib
 import json
+import socket
+import select
+import sys
 from Blockchain import NodoBlock, BlockChain
 bloque=BlockChain()
 
 index=0
 clase=""
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+if len(sys.argv) != 3:  #verifica cuando se ejecuta el programa con 3 argumentos
+	print ("Correct usage: script, IP address, port number")
+	exit()
+IP_address = str(sys.argv[1])
+Port = int(sys.argv[2])
+server.connect((IP_address, Port)) #inicia el cliente
 
 def Menu_Principal(window):
 
     Titulo(window,'Main Menu')
-    window.addstr(7,21, '1. Insert Block')
-    window.addstr(8,21, '2. Select Block')
-    window.addstr(9,21, '3. Reports')
-    window.addstr(10,21, '4. Exit')
+    window.addstr(10,21, '1. Insert Block')
+    window.addstr(11,21, '2. Select Block')
+    window.addstr(12,21, '3. Reports')
+    window.addstr(13,21, '4. Exit')
     window.timeout(-1)
 
 def Titulo(window,var):
@@ -73,7 +83,7 @@ def LeerArchivo(window):
     data=""
     p=bloque.primero
     #print(m.hexdigest())
-
+    
     try:
         with open(archivo) as file:
             reader = csv.reader(file)
@@ -103,12 +113,9 @@ def LeerArchivo(window):
                 my_str_as_bytes = str.encode(str(index)+timestamp+clase+cadenajson+bloque.ultimo.HASH)
                 Hash.update(my_str_as_bytes)
                 bloque.Insertar(index,timestamp,clase,cadenajson,bloque.ultimo.HASH,str(Hash.hexdigest()))
-                
-            #bloque.GraficarBloque()
-            
-            
-            p="{\"value\":\"201403525-Nery\",\"left\":{\"value\":\"201212963-Andres\",\"left\":{\"value\":\"201005874-Estudiante1\",\"left\":null,\"right\":null},\"right\":{\"value\":\"201313526-Alan\",\"left\":null,\"right\":null}},\"right\":{\"value\":\"201403819-Anne\",\"left\":{\"value\":\"201403624-Fernando\",\"left\":null,\"right\":null},\"right\":{\"value\":\"201602255-Estudiante2\",\"left\":null,\"right\":null}}}"
+            #bloque.GraficarBloque()            
             decoded=json.loads(cadenajson)
+            Send_Bloque(server,cadenajson)
             Read_Json(decoded)
             while True:
                 window.clear()
@@ -139,8 +146,9 @@ def Read_Json(data):
             Read_Json(datos)
         else:
             if datos != None:
-                print(datos)
-                print("carne:",datos.split('-',1))
+                p=datos.split("-")
+                #print("carne: ",p[0])
+                #print("nombre: ",p[1])
             else:
                 pass
 
@@ -178,8 +186,8 @@ def print_Bloque(window, index,time,clase,data,prev,Hash):
     window.addstr(3, 4, "TIMESTAMP:"+t)
     window.addstr(4, 4, "CLASS: " +c)
     window.addstr(5,4, "DATA: "+ dat)
-    window.addstr(13, 4,"PREVIOUSHASH: " +p)
-    window.addstr(18, 4, "HASH: " +h)
+    window.addstr(20, 4,"PREVIOUSHASH: " +p)
+    window.addstr(22, 4, "HASH: " +h)
    
     
     window.refresh()
@@ -199,32 +207,55 @@ def Menu_Bloque(window):
         while(validar):
             key = window.getch()
             if key == curses.KEY_RIGHT:
-                temp = temp.siguiente
-                n = temp.INDEX
-                t=temp.TIMESTAMP
-                c=temp.CLASS
-                d=temp.DATA
-                p=temp.PREVIOUSHASH
-                h=temp.HASH
+                if temp.siguiente != None:
+                    temp = temp.siguiente
+                    n = temp.INDEX
+                    t=temp.TIMESTAMP
+                    c=temp.CLASS
+                    d=temp.DATA
+                    p=temp.PREVIOUSHASH
+                    h=temp.HASH
+                else:
+                   print_Bloque
             elif key == curses.KEY_LEFT:
-                temp = temp.atras
-                n = temp.INDEX
-                t=temp.TIMESTAMP
-                c=temp.CLASS
-                d=temp.DATA
-                p=temp.PREVIOUSHASH
-                h=temp.HASH
+                if temp.atras != None:
+                    temp = temp.atras
+                    n = temp.INDEX
+                    t=temp.TIMESTAMP
+                    c=temp.CLASS
+                    d=temp.DATA
+                    p=temp.PREVIOUSHASH
+                    h=temp.HASH
+                else:
+                    pass
             elif key == 10:
                 break
             elif key == 27:
                 break
             print_Bloque(window, n,t,c,d,p,h)
     else:
-        print("vacio")
+        text="<- VACIO ->   "
+        centro = round((60-len(text))/2)
+        window.addstr(12, centro , text)
 
+
+def Send_Bloque(server,data):
+    flag=True 
+    while flag:
+        read_sockets = select.select([server], [], [], 1)[0]
+        import msvcrt
+        if msvcrt.kbhit(): read_sockets.append(sys.stdin)
+        for socks in read_sockets:
+                server.sendall(data.encode('utf-8'))
+                #print(data.encode('utf-8')) 
+                flag=False
+        
+                  
+          
+    
 
 curses.initscr()
-window = curses.newwin(23,60,0,0)
+window = curses.newwin(25,60,0,0)
 window.keypad(True)
 curses.noecho()
 curses.curs_set(0)
@@ -232,5 +263,5 @@ window.border(0)
 
 Menu_Principal(window)
 Seleccion(window)
-
+server.close()
 curses.endwin()
