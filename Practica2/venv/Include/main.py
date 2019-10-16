@@ -13,6 +13,13 @@ bloque=BlockChain()
 
 index=0
 clase=""
+timestamp=""
+cadenajson=""
+salida=""
+prevhash=""
+Hash=""
+codificar=hashlib.sha256()
+
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 if len(sys.argv) != 3:  #verifica cuando se ejecuta el programa con 3 argumentos
 	print ("Correct usage: script, IP address, port number")
@@ -41,7 +48,7 @@ def TeclaESC(window):
     while tecla!=27:
         tecla = window.getch()
 
-def Seleccion(window):
+def Seleccion(window,flag):
     keystroke = -1
     while(keystroke==-1):
         keystroke = window.getch()
@@ -64,13 +71,18 @@ def Seleccion(window):
             Menu_Principal(window)
             keystroke=-1
         elif(keystroke==52):
-            pass
+            flag=False
         else:
             keystroke=-1
 
 def LeerArchivo(window):
     global index
     global clase
+    global cadenajson
+    global timestamp
+    global codificar
+    global prevhash
+    global Hash
     data = ""
     x=datetime.datetime.now()
     y=datetime.datetime.now()
@@ -79,11 +91,8 @@ def LeerArchivo(window):
     archivo=carga(window)
     pito=""
     timestamp=fecha+hora
-    Hash = hashlib.sha256()
     data=""
-    p=bloque.primero
-    #print(m.hexdigest())
-    
+    cod = hashlib.sha256()
     try:
         with open(archivo) as file:
             reader = csv.reader(file)
@@ -98,25 +107,30 @@ def LeerArchivo(window):
                         data=data+pito
                     line_count +=  1
                 temp=len(data)
-                cadenajson=data[:temp-2]
-                #print(cadenajson)
-                
+                cadenajson=data[:temp-2] 
+
+            decoded=json.loads(cadenajson)
+            
+            Read_Json(decoded)
             if bloque.primero == None:
                 index=0
-                my_str_as_bytes1 = str.encode(str(index)+timestamp+clase+cadenajson+"0000")
-                Hash.update(my_str_as_bytes1)
-                bloque.Insertar(index,timestamp,clase,cadenajson,"0000",str(Hash.hexdigest()))
-                
+                prevhash="0000"
+                H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
+                cod.update(H)
+                Hash=str(cod.hexdigest())
             else:
                 index=index+1
                 aux=bloque.primero
-                my_str_as_bytes = str.encode(str(index)+timestamp+clase+cadenajson+bloque.ultimo.HASH)
-                Hash.update(my_str_as_bytes)
-                bloque.Insertar(index,timestamp,clase,cadenajson,bloque.ultimo.HASH,str(Hash.hexdigest()))
-            #bloque.GraficarBloque()            
-            decoded=json.loads(cadenajson)
-            Send_Bloque(server,cadenajson)
-            Read_Json(decoded)
+                prevhash=bloque.ultimo.HASH
+                H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
+                cod.update(H)
+                Hash=str(cod.hexdigest())
+
+            
+           # Send_Bloque(server,Convertir_JSON(str(index),timestamp,clase,cadenajson,prevhash,Hash))
+                
+           
+
             while True:
                 window.clear()
                 window.border(0)
@@ -125,6 +139,7 @@ def LeerArchivo(window):
                 centro = round((60-len(msg))/2)
                 window.addstr(10,centro,msg)
                 sel = window.getch()
+                server.sendall(Convertir_JSON(index,timestamp,clase,cadenajson,prevhash,Hash).encode('utf-8'))
                 if sel == 27:
                     break
     except:
@@ -139,6 +154,25 @@ def LeerArchivo(window):
             if key2 is 27:
                 break
 
+def Convertir_JSON(inde,time,clase,data,prev,h):
+    json="{\n"+"\"INDEX\": "+str(index)+",\n"+"\"TIMESTAMP\": "+"\""+time+"\""+",\n"+"\"CLASS\": "+"\""+clase+"\""+",\n"+"\"DATA\": "+data+",\n"+"\"PREVIOUSHASH\": "+"\""+prev+"\""+",\n"+"\"HASH\": "+"\""+h+"\""+"\n"+"}"
+    return json
+
+    
+def Insert_Bloque(timestamp,clase,cadenajson):
+    global index
+    Hash = hashlib.sha256()
+    if bloque.primero == None:
+        index=0
+        my_str_as_bytes1 = str.encode(str(index)+timestamp+clase+cadenajson+"0000")
+        Hash.update(my_str_as_bytes1)
+        bloque.Insertar(index,timestamp,clase,cadenajson,"0000",str(Hash.hexdigest()))     
+    else:
+        index=index+1
+        aux=bloque.primero
+        my_str_as_bytes = str.encode(str(index)+timestamp+clase+cadenajson+bloque.ultimo.HASH)
+        Hash.update(my_str_as_bytes)
+        bloque.Insertar(index,timestamp,clase,cadenajson,bloque.ultimo.HASH,str(Hash.hexdigest()))
 
 def Read_Json(data):
     for (inicio,datos) in data.items():
@@ -238,21 +272,10 @@ def Menu_Bloque(window):
         centro = round((60-len(text))/2)
         window.addstr(12, centro , text)
 
+def Sha_256(ind,time,clas,dat,pre):
+    code = hashlib.sha256('{}{}{}{}{}'.format(str(ind),str(time),str(clas),str(dat),str(pre)).encode())
 
-def Send_Bloque(server,data):
-    flag=True 
-    while flag:
-        read_sockets = select.select([server], [], [], 1)[0]
-        import msvcrt
-        if msvcrt.kbhit(): read_sockets.append(sys.stdin)
-        for socks in read_sockets:
-                server.sendall(data.encode('utf-8'))
-                #print(data.encode('utf-8')) 
-                flag=False
-        
-                  
-          
-    
+    return str(code.hexdigest())
 
 curses.initscr()
 window = curses.newwin(25,60,0,0)
@@ -260,8 +283,47 @@ window.keypad(True)
 curses.noecho()
 curses.curs_set(0)
 window.border(0)
-
+flag=True
 Menu_Principal(window)
-Seleccion(window)
-server.close()
+
+while True:
+    keystroke = window.getch()
+
+    read_sockets = select.select([server], [], [], 1)[0]
+    import msvcrt
+    if msvcrt.kbhit(): read_sockets.append(sys.stdin)
+
+    for socks in read_sockets:
+        if socks == server:
+            message = socks.recv(2048)
+            print (message.decode('utf-8'))
+            if message.decode('utf-8') == 'true':
+                print ("esto es un true")
+                server.sendall('true'.encode('utf-8'))
+            else:
+                print("no entra al if")
+    
+    if(keystroke==49):
+        Titulo(window, ' Insert Block ')
+        LeerArchivo(window)
+        TeclaESC(window)
+        Menu_Principal(window)
+    elif(keystroke==50):
+        Titulo(window, ' Select Block ')
+        Menu_Bloque(window)
+        TeclaESC(window)
+        Menu_Principal(window)
+    elif(keystroke==51):
+        Titulo(window,' Reports')
+        TeclaESC(window)
+        Menu_Principal(window)
+    elif(keystroke==52):
+        break
+    else:
+        pass
+    
+        
+
+
 curses.endwin()
+server.close()
