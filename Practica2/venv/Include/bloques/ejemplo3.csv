@@ -1,0 +1,30 @@
+class,Orga
+data,"{
+    ""value"": ""201400954-Est1"",
+    ""left"": {
+      ""value"": ""201212123-Est2"",
+      ""left"": null,
+      ""right"":{
+        ""value"": ""98963565-Est3"",
+        ""left"": null,
+        ""right"": null
+      }
+    },
+    ""right"": {
+      ""value"": ""201303817-Rosa"",
+      ""left"": {
+        ""value"": ""201403624-Antonio"",
+        ""left"": {
+            ""value"": ""201602255-Est5"",
+            ""left"": {
+                ""value"": ""201212255-Est6"",
+                ""left"": null,
+                ""right"": null
+                },
+            ""right"": null
+            },
+        ""right"": null
+       },
+      ""right"":null
+    }
+}"

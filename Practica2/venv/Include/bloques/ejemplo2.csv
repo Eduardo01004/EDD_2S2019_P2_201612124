@@ -1,0 +1,26 @@
+class,COMPI1
+data,"{
+    ""value"": ""201400954-Est1"",
+    ""left"": {
+      ""value"": ""201212123-Est2"",
+      ""left"": {
+        ""value"": ""98963565-Est3"",
+        ""left"": null,
+        ""right"": null
+      },
+      ""right"":null
+    },
+    ""right"": {
+      ""value"": ""201303817-Rosa"",
+      ""left"": {
+        ""value"": ""201403624-Antonio"",
+        ""left"": null,
+        ""right"":{
+            ""value"": ""201602255-Est5"",
+            ""left"": null,
+            ""right"": null
+            }
+       },
+      ""right"":null
+    }
+}"

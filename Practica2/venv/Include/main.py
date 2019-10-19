@@ -9,6 +9,7 @@ import socket
 import select
 import sys
 from Blockchain import NodoBlock, BlockChain
+from ArbolAVL import NodoAVL,ArbolAVL
 bloque=BlockChain()
 
 index=0
@@ -19,6 +20,8 @@ salida=""
 prevhash=""
 Hash=""
 codificar=hashlib.sha256()
+flag_send=False
+username=""
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 if len(sys.argv) != 3:  #verifica cuando se ejecuta el programa con 3 argumentos
@@ -29,13 +32,95 @@ Port = int(sys.argv[2])
 server.connect((IP_address, Port)) #inicia el cliente
 
 def Menu_Principal(window):
-
     Titulo(window,'Main Menu')
     window.addstr(10,21, '1. Insert Block')
     window.addstr(11,21, '2. Select Block')
     window.addstr(12,21, '3. Reports')
     window.addstr(13,21, '4. Exit')
-    window.timeout(-1)
+
+def Menu_Reports(window):
+    Titulo(window,'Reports')
+    window.addstr(10,21, '1. BlockChain Report')
+    window.addstr(11,21, '2. Tree Reports')
+    window.addstr(12,21, '3. Exit')
+
+def Select_Reports(window):
+    window.clear()
+    Menu_Reports(window)
+    keystroke = -1
+    while(keystroke==-1):
+        keystroke = window.getch()
+        if(keystroke==49): #1
+            bloque.GraficarBloque()
+            keystroke=-1
+        elif(keystroke==50):
+            global username
+            Titulo(window,'Reports')
+            a= Pedir_Dato(window)
+            bloc=bloque.Buscar(int(a))
+            if bloc != None:
+                bloc.arbol.GraficarAVL()
+            else:
+                print("Vacio")
+            TeclaESC(window)
+            Menu_Reports(window)
+            keystroke=-1
+        elif(keystroke==51):
+            Menu_Principal(window)
+        else:
+            keystroke=-1
+    window.refresh()
+
+def Sub_Menu_Tree(window):
+    Titulo(window,'Main Menu')
+    window.addstr(10,21, '1. Tree Report')
+    window.addstr(11,21, '2. Inorden')
+    window.addstr(12,21, '3. PostOrden')
+    window.addstr(13,21, '4. Preorden')
+    window.addstr(13,21, '5. Exit')
+
+def Pedir_Dato(screen):
+    curses.echo()
+    curses.curs_set(True)
+    screen.addstr(13, 5, "Ingrese el index")
+    jugador = screen.getstr()
+    curses.curs_set(False)
+    screen.clear()
+    return jugador
+
+
+def Select_SubMenu(window):
+    window.clear()
+    Menu_Reports(window)
+    keystroke = -1
+    while(keystroke==-1):
+        keystroke = window.getch()
+        if(keystroke==49): #1
+            global username
+            a= Pedir_Dato(window)
+            username = "".join(map(chr, a))
+            bloc=bloque.Buscar(ord(username))
+            if bloc != None:
+                bloc.arbol.GraficarAVL()
+            else:
+                print("Vacio")
+        elif(keystroke==50):
+            
+            keystroke=-1
+        elif(keystroke==51):
+            pass
+            
+        elif(keystroke==52):
+            pass
+            
+        elif(keystroke==53):
+            Menu_Principal(window)
+            Seleccion(window)
+        else:
+            keystroke=-1
+    window.refresh()
+
+
 
 def Titulo(window,var):
     window.clear()
@@ -48,32 +133,27 @@ def TeclaESC(window):
     while tecla!=27:
         tecla = window.getch()
 
-def Seleccion(window,flag):
-    keystroke = -1
-    while(keystroke==-1):
-        keystroke = window.getch()
-        if(keystroke==49):
-            global username
-            Titulo(window, ' Insert Block ')
-            LeerArchivo(window)
-            TeclaESC(window)
-            Menu_Principal(window)
-            keystroke=-1
-        elif(keystroke==50):
-            Titulo(window, ' Select Block ')
-            Menu_Bloque(window)
-            TeclaESC(window)
-            Menu_Principal(window)
-            keystroke=-1
-        elif(keystroke==51):
-            Titulo(window,' Reports')
-            TeclaESC(window)
-            Menu_Principal(window)
-            keystroke=-1
-        elif(keystroke==52):
-            flag=False
-        else:
-            keystroke=-1
+def Seleccion(window):
+    keystroke = window.getch()
+    if(keystroke==49):
+        Titulo(window, ' Insert Block ')
+        LeerArchivo(window)
+        TeclaESC(window)
+        Menu_Principal(window)
+    elif(keystroke==50):
+        Titulo(window, ' Select Block ')
+        Menu_Bloque(window)
+        TeclaESC(window)
+        Menu_Principal(window)
+    elif(keystroke==51):
+        Titulo(window,' Reports')
+        Select_Reports(window)
+        TeclaESC(window)
+        Menu_Principal(window)
+    elif(keystroke==52):
+        exit()
+    else:
+        pass
 
 def LeerArchivo(window):
     global index
@@ -102,35 +182,28 @@ def LeerArchivo(window):
                     line_count += 1
                     clase=row[1]
                 else:
-                    for x in range (1,len(row)):
-                        pito=row[x]+","+"\n"
-                        data=data+pito
+                    cadenajson = row[1]
                     line_count +=  1
-                temp=len(data)
-                cadenajson=data[:temp-2] 
-
-            decoded=json.loads(cadenajson)
-            
-            Read_Json(decoded)
-            if bloque.primero == None:
+                #temp=len(data)
+                #cadenajson=data[:temp-2] 
+            if bloque.primero is None:
                 index=0
                 prevhash="0000"
                 H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
                 cod.update(H)
                 Hash=str(cod.hexdigest())
             else:
-                index=index+1
+                index=(bloque.ultimo.INDEX)+1
+                print("entro a este ")
+                print(index)
                 aux=bloque.primero
                 prevhash=bloque.ultimo.HASH
                 H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
                 cod.update(H)
                 Hash=str(cod.hexdigest())
-
-            
-           # Send_Bloque(server,Convertir_JSON(str(index),timestamp,clase,cadenajson,prevhash,Hash))
                 
-           
-
+            #codes=json.loads(cadenajson)
+            #Read_Json(codes)
             while True:
                 window.clear()
                 window.border(0)
@@ -166,7 +239,8 @@ def Insert_Bloque(timestamp,clase,cadenajson):
         index=0
         my_str_as_bytes1 = str.encode(str(index)+timestamp+clase+cadenajson+"0000")
         Hash.update(my_str_as_bytes1)
-        bloque.Insertar(index,timestamp,clase,cadenajson,"0000",str(Hash.hexdigest()))     
+        bloque.Insertar(index,timestamp,clase,cadenajson,"0000",str(Hash.hexdigest()))
+        print(cadenajson)    
     else:
         index=index+1
         aux=bloque.primero
@@ -174,19 +248,20 @@ def Insert_Bloque(timestamp,clase,cadenajson):
         Hash.update(my_str_as_bytes)
         bloque.Insertar(index,timestamp,clase,cadenajson,bloque.ultimo.HASH,str(Hash.hexdigest()))
 
-def Read_Json(data):
+def Read_Json(data,index):
     for (inicio,datos) in data.items():
         if isinstance(datos, dict):
-            Read_Json(datos)
+            Read_Json(datos,index)
         else:
             if datos != None:
                 p=datos.split("-")
-                #print("carne: ",p[0])
-                #print("nombre: ",p[1])
+                nodo=bloque.Buscar(index)
+                if nodo != None:
+                    nodo.arbol.insertartodo(p[0],str(p[1]))
+                else:
+                    print("no existe el index del bloque")
             else:
                 pass
-
-
 
 def carga(window):
     window.clear()
@@ -206,6 +281,7 @@ def carga(window):
     window.clear()
     return texto
 
+
 def print_Bloque(window, index,time,clase,data,prev,Hash):
     window.clear()
     Titulo(window,' Select Block ')
@@ -213,7 +289,7 @@ def print_Bloque(window, index,time,clase,data,prev,Hash):
     ind=index
     t=time
     c=clase
-    dat=data
+    dat=data[:150]
     p=prev
     h=Hash
     window.addstr(2, 4, "INDEX: "+str(ind))
@@ -221,7 +297,7 @@ def print_Bloque(window, index,time,clase,data,prev,Hash):
     window.addstr(4, 4, "CLASS: " +c)
     window.addstr(5,4, "DATA: "+ dat)
     window.addstr(20, 4,"PREVIOUSHASH: " +p)
-    window.addstr(22, 4, "HASH: " +h)
+    window.addstr(23, 4, "HASH: " +h)
    
     
     window.refresh()
@@ -237,7 +313,7 @@ def Menu_Bloque(window):
         d=temp.DATA
         p=temp.PREVIOUSHASH
         h=temp.HASH
-        print_Bloque(window, n,t,c,d,p,h)
+        print_Bloque(window, n,t,c,str(d),p,h)
         while(validar):
             key = window.getch()
             if key == curses.KEY_RIGHT:
@@ -283,12 +359,11 @@ window.keypad(True)
 curses.noecho()
 curses.curs_set(0)
 window.border(0)
-flag=True
 Menu_Principal(window)
+datos={}
+flag=False
 
 while True:
-    keystroke = window.getch()
-
     read_sockets = select.select([server], [], [], 1)[0]
     import msvcrt
     if msvcrt.kbhit(): read_sockets.append(sys.stdin)
@@ -297,30 +372,61 @@ while True:
         if socks == server:
             message = socks.recv(2048)
             print (message.decode('utf-8'))
-            if message.decode('utf-8') == 'true':
+            if message.decode('utf-8').strip() == 'true':
                 print ("esto es un true")
-                server.sendall('true'.encode('utf-8'))
+                flag=True
             else:
-                print("no entra al if")
+                if message.decode('utf-8').strip() == 'false':
+                    print("es un false")
+                    flag = False
+                    datos={}
+                    
+                else:
+                    try:
+                        datos={}
+                        JSON=message.decode('utf-8')
+                        #print(JSON)
+                        datos=json.loads(JSON)
+                        #print (datos)
+                        #pito=Sha_256(datos['INDEX'],datos['TIMESTAMP'],datos['CLASS'],json.dumps(datos['DATA'], indent=4),datos['PREVIOUSHASH'])
+                        #print(json.dumps(datos['DATA'], indent=4))
+                        #print(pito)
+                        if bloque.primero is None:
+                            server.sendall('true'.encode('utf-8'))
+                            sys.stdout.flush()
+                        else:
+
+                            if datos['PREVIOUSHASH'] == bloque.ultimo.HASH:
+                                print("se envia true al server")
+                                server.sendall('true'.encode('utf-8'))
+                            else:
+                                print("se envia false al server")
+                                server.sendall('false'.encode('utf-8'))
+                            sys.stdout.flush()
+
+                    except:
+                        print("error: formato json con error")
+
+    if flag and datos != None:
+        if cadenajson == "" and timestamp =="":
+            bloque.Insertar(datos['INDEX'], datos["TIMESTAMP"], datos["CLASS"], json.dumps(datos['DATA'], indent=4), datos["PREVIOUSHASH"], datos["HASH"])
+            codes=json.loads(json.dumps(datos['DATA']))
+            Read_Json(codes,datos["INDEX"])
+        else:
+            bloque.Insertar(index,timestamp,clase,cadenajson,prevhash,Hash)
+            codes=json.loads(cadenajson)
+            Read_Json(codes,index)
+            cadenajson=""
+            timestamp=""
+            index=0
+            Hash=""
+            prevhash=""
+            clase=""
+
+        flag=False
+        datos=None
     
-    if(keystroke==49):
-        Titulo(window, ' Insert Block ')
-        LeerArchivo(window)
-        TeclaESC(window)
-        Menu_Principal(window)
-    elif(keystroke==50):
-        Titulo(window, ' Select Block ')
-        Menu_Bloque(window)
-        TeclaESC(window)
-        Menu_Principal(window)
-    elif(keystroke==51):
-        Titulo(window,' Reports')
-        TeclaESC(window)
-        Menu_Principal(window)
-    elif(keystroke==52):
-        break
-    else:
-        pass
+    Seleccion(window)
     
         
 

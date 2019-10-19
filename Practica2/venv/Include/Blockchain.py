@@ -54,6 +54,14 @@ class BlockChain:
         os.system(" ListaBloques.png")
 
 
+    def Buscar(self,index):
+        aux=self.primero
+        while aux != None:
+            if aux.INDEX == index:
+                return aux
+            aux=aux.siguiente
+        return None
+
 
     def Read_Json(self,data):
         for (k,datos) in data.items():

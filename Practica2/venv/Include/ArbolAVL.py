@@ -133,6 +133,7 @@ class ArbolAVL:
 
 
 
+
 if __name__=="__main__":
     arbol=ArbolAVL()
     arbol.insertartodo(201403525,"Nery")
