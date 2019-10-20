@@ -22,6 +22,7 @@ Hash=""
 codificar=hashlib.sha256()
 flag_send=False
 username=""
+selectblock=0
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 if len(sys.argv) != 3:  #verifica cuando se ejecuta el programa con 3 argumentos
@@ -33,10 +34,10 @@ server.connect((IP_address, Port)) #inicia el cliente
 
 def Menu_Principal(window):
     Titulo(window,'Main Menu')
-    window.addstr(10,21, '1. Insert Block')
-    window.addstr(11,21, '2. Select Block')
-    window.addstr(12,21, '3. Reports')
-    window.addstr(13,21, '4. Exit')
+    window.addstr(8,21, '1. Insert Block')
+    window.addstr(9,21, '2. Select Block')
+    window.addstr(10,21, '3. Reports')
+    window.addstr(11,21, '4. Exit')
 
 def Menu_Reports(window):
     Titulo(window,'Reports')
@@ -54,14 +55,7 @@ def Select_Reports(window):
             bloque.GraficarBloque()
             keystroke=-1
         elif(keystroke==50):
-            global username
-            Titulo(window,'Reports')
-            a= Pedir_Dato(window)
-            bloc=bloque.Buscar(int(a))
-            if bloc != None:
-                bloc.arbol.GraficarAVL()
-            else:
-                print("Vacio")
+            select_Report_Tree(window)
             TeclaESC(window)
             Menu_Reports(window)
             keystroke=-1
@@ -71,13 +65,68 @@ def Select_Reports(window):
             keystroke=-1
     window.refresh()
 
+def select_Report_Tree(window):
+    window.clear()
+    Sub_Menu_Tree(window)
+    keystroke = -1
+    while(keystroke==-1):
+        keystroke = window.getch()
+        if(keystroke==49): #1 avl
+            bloc=bloque.Buscar(selectblock)
+            if bloc != None:
+                bloc.arbol.GraficarAVL()
+            else:
+                print("Vacio")
+            TeclaESC(window)
+            Sub_Menu_Tree(window)
+            keystroke=-1
+        elif(keystroke==50):#2 preorden
+            bloc=bloque.Buscar(selectblock)
+            if bloc != None:
+                lista=[]
+                bloc.arbol.Graph_PreOrden(lista,bloc.arbol.raiz)
+                bloc.arbol.Graph_Transversal(lista,'PREORDEN')
+            else:
+                print("Vacio")
+            TeclaESC(window)
+            Sub_Menu_Tree(window)
+            keystroke=-1
+        elif(keystroke==51):#3 postorden
+            bloc=bloque.Buscar(selectblock)
+            if bloc != None:
+                lista=[]
+                bloc.arbol.Graph_PostOrden(lista,bloc.arbol.raiz)
+                bloc.arbol.Graph_Transversal(lista,'POSTORDEN')
+            else:
+                print("Vacio")
+            TeclaESC(window)
+            Sub_Menu_Tree(window)
+            keystroke=-1
+        elif(keystroke==52):#4 inorden
+            bloc=bloque.Buscar(selectblock)
+            if bloc != None:
+                lista=[]
+                bloc.arbol.Graph_Inorden(lista,bloc.arbol.raiz)
+                bloc.arbol.Graph_Transversal(lista,'INORDEN')
+            else:
+                print("Vacio")
+            TeclaESC(window)
+            Sub_Menu_Tree(window)
+            keystroke=-1
+        elif(keystroke==53):# exit
+            Menu_Reports(window)
+        else:
+            keystroke=-1
+    window.refresh()
+
+
 def Sub_Menu_Tree(window):
-    Titulo(window,'Main Menu')
+    Titulo(window,'Tree Reports')
     window.addstr(10,21, '1. Tree Report')
-    window.addstr(11,21, '2. Inorden')
+    window.addstr(11,21, '2. PreOrden')
     window.addstr(12,21, '3. PostOrden')
-    window.addstr(13,21, '4. Preorden')
-    window.addstr(13,21, '5. Exit')
+    window.addstr(13,21, '4. Inorden')
+    window.addstr(14,21, '5. Exit')
 
 def Pedir_Dato(screen):
     curses.echo()
@@ -184,26 +233,6 @@ def LeerArchivo(window):
                 else:
                     cadenajson = row[1]
                     line_count +=  1
-                #temp=len(data)
-                #cadenajson=data[:temp-2] 
-            if bloque.primero is None:
-                index=0
-                prevhash="0000"
-                H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
-                cod.update(H)
-                Hash=str(cod.hexdigest())
-            else:
-                index=(bloque.ultimo.INDEX)+1
-                print("entro a este ")
-                print(index)
-                aux=bloque.primero
-                prevhash=bloque.ultimo.HASH
-                H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
-                cod.update(H)
-                Hash=str(cod.hexdigest())
-                
-            #codes=json.loads(cadenajson)
-            #Read_Json(codes)
             while True:
                 window.clear()
                 window.border(0)
@@ -212,6 +241,22 @@ def LeerArchivo(window):
                 centro = round((60-len(msg))/2)
                 window.addstr(10,centro,msg)
                 sel = window.getch()
+                if bloque.primero == None:
+                    index=0
+                    prevhash="0000"
+                    H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
+                    cod.update(H)
+                    Hash=str(cod.hexdigest())
+                    print("entro en lista vacia cuando carga")
+                else:
+                    index=(bloque.ultimo.INDEX)+1
+                    prevhash=bloque.ultimo.HASH
+                    H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
+                    cod.update(H)
+                    Hash=str(cod.hexdigest())
+                    print("entro en lista no vacia cuando carga")
+
+
                 server.sendall(Convertir_JSON(index,timestamp,clase,cadenajson,prevhash,Hash).encode('utf-8'))
                 if sel == 27:
                     break
@@ -296,8 +341,8 @@ def print_Bloque(window, index,time,clase,data,prev,Hash):
     window.addstr(3, 4, "TIMESTAMP:"+t)
     window.addstr(4, 4, "CLASS: " +c)
     window.addstr(5,4, "DATA: "+ dat)
-    window.addstr(20, 4,"PREVIOUSHASH: " +p)
-    window.addstr(23, 4, "HASH: " +h)
+    window.addstr(15, 4,"PREVIOUSHASH: " +p)
+    window.addstr(18, 4, "HASH: " +h)
    
     
     window.refresh()
@@ -305,6 +350,7 @@ def print_Bloque(window, index,time,clase,data,prev,Hash):
 def Menu_Bloque(window):
     temp=bloque.primero
     temp2=bloque.ultimo
+    global selectblock
     validar=True
     if temp != None:
         n = temp.INDEX
@@ -339,6 +385,7 @@ def Menu_Bloque(window):
                 else:
                     pass
             elif key == 10:
+                selectblock=n
                 break
             elif key == 27:
                 break
@@ -354,7 +401,7 @@ def Sha_256(ind,time,clas,dat,pre):
     return str(code.hexdigest())
 
 curses.initscr()
-window = curses.newwin(25,60,0,0)
+window = curses.newwin(20,60,0,0)
 window.keypad(True)
 curses.noecho()
 curses.curs_set(0)
@@ -371,7 +418,7 @@ while True:
     for socks in read_sockets:
         if socks == server:
             message = socks.recv(2048)
-            print (message.decode('utf-8'))
+            #print (message.decode('utf-8'))
             if message.decode('utf-8').strip() == 'true':
                 print ("esto es un true")
                 flag=True
@@ -391,11 +438,13 @@ while True:
                         #pito=Sha_256(datos['INDEX'],datos['TIMESTAMP'],datos['CLASS'],json.dumps(datos['DATA'], indent=4),datos['PREVIOUSHASH'])
                         #print(json.dumps(datos['DATA'], indent=4))
                         #print(pito)
-                        if bloque.primero is None:
-                            server.sendall('true'.encode('utf-8'))
-                            sys.stdout.flush()
+                        if bloque.primero == None:
+                            if datos["PREVIOUSHASH"] == '0000':
+                                server.sendall('true'.encode('utf-8'))
+                                sys.stdout.flush()
+                            else:
+                                print("no sirve")
                         else:
-
                             if datos['PREVIOUSHASH'] == bloque.ultimo.HASH:
                                 print("se envia true al server")
                                 server.sendall('true'.encode('utf-8'))
@@ -408,23 +457,49 @@ while True:
                         print("error: formato json con error")
 
     if flag and datos != None:
+        cod = hashlib.sha256()
+        print("entro en la condicion el inf de none")
         if cadenajson == "" and timestamp =="":
             bloque.Insertar(datos['INDEX'], datos["TIMESTAMP"], datos["CLASS"], json.dumps(datos['DATA'], indent=4), datos["PREVIOUSHASH"], datos["HASH"])
             codes=json.loads(json.dumps(datos['DATA']))
             Read_Json(codes,datos["INDEX"])
+            flag=False
+            print("inserta con el jason")
         else:
-            bloque.Insertar(index,timestamp,clase,cadenajson,prevhash,Hash)
-            codes=json.loads(cadenajson)
-            Read_Json(codes,index)
-            cadenajson=""
-            timestamp=""
-            index=0
-            Hash=""
-            prevhash=""
-            clase=""
-
-        flag=False
-        datos=None
+            if bloque.primero == None:
+                index=0
+                prevhash="0000"
+                H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
+                cod.update(H)
+                Hash=str(cod.hexdigest())
+                bloque.Insertar(index,timestamp,clase,cadenajson,prevhash,Hash)
+                codes=json.loads(cadenajson)
+                Read_Json(codes,index)
+                cadenajson=""
+                timestamp=""
+                Hash=""
+                prevhash=""
+                clase=""
+                flag=False
+                print("inserta con la lista vacia carga")
+            else:
+                index=(bloque.ultimo.INDEX)+1
+                print("entro a este ")
+                aux=bloque.primero
+                prevhash=bloque.ultimo.HASH
+                H = str.encode(str(index)+timestamp+clase+cadenajson+prevhash)
+                cod.update(H)
+                Hash=str(cod.hexdigest())
+                bloque.Insertar(index,timestamp,clase,cadenajson,prevhash,Hash)
+                codes=json.loads(cadenajson)
+                Read_Json(codes,index)
+                cadenajson=""
+                timestamp=""
+                Hash=""
+                prevhash=""
+                clase=""
+                flag=False
+                print("inserta con lista no vacia carga")
     
     Seleccion(window)
     

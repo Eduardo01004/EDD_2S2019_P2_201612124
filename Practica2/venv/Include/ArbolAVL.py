@@ -104,7 +104,8 @@ class ArbolAVL:
     def CodigoInterno(self, raiz,file):
         if raiz != None:
             self.CodigoInterno(raiz.izquierdo,file)
-            file.write(str(raiz.carne)+"[label=\"<C0>|Carne: "+str(raiz.carne)+"&#92;n Nombre: "+raiz.nombre + "&#92;n Altura: "+ str(raiz.altura)+"|<C1>\"];\n")
+            Fe=self.ObtenerFe(raiz.izquierdo)-self.ObtenerFe(raiz.derecho)
+            file.write(str(raiz.carne)+"[label=\"<C0>|Carne: "+str(raiz.carne)+"&#92;n Nombre: "+raiz.nombre + "&#92;n Altura: "+ str(raiz.altura)+"&#92;n FE: "+ str(Fe)+"|<C1>\"];\n")
             if raiz.derecho != None:
                 file.write(str(raiz.carne) + "->" + str(raiz.derecho.carne)+"\n")
             if raiz.izquierdo != None:
@@ -131,11 +132,55 @@ class ArbolAVL:
             self.PostOrden(raiz.izquierdo)
             self.PostOrden(raiz.derecho)
 
+    def Graph_Transversal(self,lista,name):
+        file=open('{}.dot'.format(name),"w")
+        file.write("digraph inorden {\nrankdir = LR;\n")
+        i=0
+        for i in range(len(lista)):
+            file.write(str(i)+"[shape=record, style=filled, fillcolor=seashell2,label=\"Carnet:"+str(lista[i])+"\"];\n")
+            file.write(str(i)+"->"+str(i+1)+"\n")
+
+        file.write(str(i+1)+"[shape=record, style=filled, fillcolor=seashell2,label=\"Fin\"];\n")
+        file.write("}\n")
+        file.close()
+        os.system('dot -Tpng {}.dot -o {}.png'.format(name,name))
+        os.system('{}.png'.format(name))
+    
+    def Graph_Inorden(self, lista, raiz):
+        if raiz != None:
+            carnet=str(raiz.carne)
+            name=raiz.nombre
+            total='{}\\n{}'.format(carnet,name)
+            self.Graph_Inorden(lista,raiz.izquierdo)
+            lista.append(total)
+            self.Graph_Inorden(lista,raiz.derecho)
+
+    def Graph_PostOrden(self, lista, raiz):
+        if raiz != None:
+            carnet=str(raiz.carne)
+            name=raiz.nombre
+            total='{}\\n{}'.format(carnet,name)
+            self.Graph_Inorden(lista,raiz.izquierdo)
+            self.Graph_Inorden(lista,raiz.derecho)
+            lista.append(total)
+            
+
+    def Graph_PreOrden(self, lista, raiz):
+        if raiz != None:
+            carnet=str(raiz.carne)
+            name=raiz.nombre
+            total='{}\\n{}'.format(carnet,name)
+            lista.append(total)
+            self.Graph_Inorden(lista,raiz.izquierdo)
+            self.Graph_Inorden(lista,raiz.derecho)
+
+
 
 
 
 if __name__=="__main__":
     arbol=ArbolAVL()
+    lista=[]
     arbol.insertartodo(201403525,"Nery")
     arbol.insertartodo(201212963, "Andres")
     arbol.insertartodo(201005874, "Estudiante1")
@@ -145,3 +190,5 @@ if __name__=="__main__":
     arbol.insertartodo(201602255, "Estudiante2")
     arbol.InOrden(arbol.raiz)
     arbol.GraficarAVL()
+    arbol.Graph_Inorden(lista,arbol.raiz)
+    arbol.Graph_Transversal(lista,'INORDEN')
