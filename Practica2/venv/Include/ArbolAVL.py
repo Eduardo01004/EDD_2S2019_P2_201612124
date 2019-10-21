@@ -110,7 +110,6 @@ class ArbolAVL:
                 file.write(str(raiz.carne) + "->" + str(raiz.derecho.carne)+"\n")
             if raiz.izquierdo != None:
                 file.write(str(raiz.carne) + "->" + str(raiz.izquierdo.carne) + "\n")
-
             self.CodigoInterno(raiz.derecho,file)
 
 
@@ -124,7 +123,7 @@ class ArbolAVL:
         if raiz != None:
             self.PostOrden(raiz.izquierdo)
             self.PostOrden(raiz.derecho)
-            print(raiz.carne)
+            print(str(raiz.carne)+"-"+raiz.nombre+"->", end=" ")
     
     def PreOrden(self,raiz):
         if raiz != None:
@@ -188,7 +187,7 @@ if __name__=="__main__":
     arbol.insertartodo(201403819, "Anne")
     arbol.insertartodo(201403624, "Fernando")
     arbol.insertartodo(201602255, "Estudiante2")
-    arbol.InOrden(arbol.raiz)
+    arbol.PostOrden(arbol.raiz)
     arbol.GraficarAVL()
     arbol.Graph_Inorden(lista,arbol.raiz)
     arbol.Graph_Transversal(lista,'INORDEN')

@@ -1,18 +1,18 @@
 digraph inorden {
 rankdir = LR;
-0[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201400954\nEst1"];
+0[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201403525\nNery"];
 0->1
-1[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201212123\nEst2"];
+1[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201005874\nEstudiante1"];
 1->2
-2[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201212255\nEst6"];
+2[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201212963\nAndres"];
 2->3
-3[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201303817\nRosa"];
+3[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201313526\nAlan"];
 3->4
-4[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201403624\nAntonio"];
+4[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201403624\nFernando"];
 4->5
-5[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201602255\nEst5"];
+5[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201403819\nAnne"];
 5->6
-6[shape=record, style=filled, fillcolor=seashell2,label="Carnet:98963565\nEst3"];
+6[shape=record, style=filled, fillcolor=seashell2,label="Carnet:201602255\nEstudiante2"];
 6->7
 7[shape=record, style=filled, fillcolor=seashell2,label="Fin"];
 }
